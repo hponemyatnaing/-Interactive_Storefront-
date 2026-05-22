@@ -1,3 +1,4 @@
+document.addEventListener("DOMContentLoaded" , () => {
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 
 const cartItemsContainer = document.getElementById('cartItemsContainer');
@@ -111,3 +112,5 @@ addToCartButtons.forEach(button => {
   });
 
 });
+});
+
