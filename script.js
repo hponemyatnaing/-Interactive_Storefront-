@@ -1,116 +1,117 @@
-document.addEventListener("DOMContentLoaded" , () => {
-const themeToggleBtn = document.getElementById('themeToggleBtn');
+$(document).ready(function () {
 
-const cartItemsContainer = document.getElementById('cartItemsContainer');
+    const themeToggleBtn = $('#themeToggleBtn');
 
-const subtotalElement = document.getElementById('subtotal');
+    const cartItemsContainer = $('#cartItemsContainer');
 
-const taxElement = document.getElementById('tax');
+    const subtotalElement = $('#subtotal');
 
-const totalElement = document.getElementById('total');
+    const taxElement = $('#tax');
 
-const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    const totalElement = $('#total');
 
-let shoppingCart = [];
+    const addToCartButtons = $('.add-to-cart');
 
-const savedTheme = localStorage.getItem('theme');
+    let shoppingCart = [];
 
-if (savedTheme === 'dark') {
-  document.body.classList.add('dark-mode');
-}
+    // ===============================
+    // THEME
+    // ===============================
 
-themeToggleBtn.addEventListener('click', () => {
+    const savedTheme = localStorage.getItem('theme');
 
-  document.body.classList.toggle('dark-mode');
+    if (savedTheme === 'dark') {
+        $('body').addClass('dark-mode');
+    }
 
-  if (document.body.classList.contains('dark-mode')) {
-    localStorage.setItem('theme', 'dark');
-  } else {
-    localStorage.setItem('theme', 'light');
-  }
+    themeToggleBtn.on('click', function () {
 
-});
+        $('body').toggleClass('dark-mode');
 
-
-function updateCartDisplay() {
-
-  cartItemsContainer.innerHTML = '';
-
-  let subtotal = 0;
-
-  shoppingCart.forEach((item, index) => {
-
-    subtotal += item.price;
-
-    const cartItem = document.createElement('div');
-
-    cartItem.classList.add('cart-item');
-
-    cartItem.innerHTML = `
-            <p>${item.name} - $${item.price.toFixed(2)}</p>
-
-            <button class="remove-btn" data-index="${index}">
-                Remove
-            </button>
-        `;
-
-    cartItemsContainer.appendChild(cartItem);
-
-  });
-
-
-  const tax = subtotal * 0.10;
-
-  const grandTotal = subtotal + tax;
-
-
-  subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-
-  taxElement.textContent = `$${tax.toFixed(2)}`;
-
-  totalElement.textContent = `$${grandTotal.toFixed(2)}`;
-
-
-  const removeButtons = document.querySelectorAll('.remove-btn');
-
-  removeButtons.forEach(button => {
-
-    button.addEventListener('click', () => {
-
-      const itemIndex = button.dataset.index;
-
-      shoppingCart.splice(itemIndex, 1);
-
-      updateCartDisplay();
+        if ($('body').hasClass('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
 
     });
 
-  });
+    // ===============================
+    // UPDATE CART
+    // ===============================
 
-}
+    function updateCartDisplay() {
 
-addToCartButtons.forEach(button => {
+        cartItemsContainer.html('');
 
-  button.addEventListener('click', () => {
+        let subtotal = 0;
 
-    const id = button.dataset.id;
+        shoppingCart.forEach((item, index) => {
 
-    const name = button.dataset.name;
+            subtotal += item.price;
 
-    const price = parseFloat(button.dataset.price);
+            const cartItem = `
+                <div class="cart-item">
+                    <p>${item.name} - $${item.price.toFixed(2)}</p>
 
-    const item = {
-      id,
-      name,
-      price
-    };
+                    <button class="remove-btn" data-index="${index}">
+                        Remove
+                    </button>
+                </div>
+            `;
 
-    shoppingCart.push(item);
+            cartItemsContainer.append(cartItem);
 
-    updateCartDisplay();
+        });
 
-  });
+        const tax = subtotal * 0.10;
+
+        const grandTotal = subtotal + tax;
+
+        subtotalElement.text(`$${subtotal.toFixed(2)}`);
+
+        taxElement.text(`$${tax.toFixed(2)}`);
+
+        totalElement.text(`$${grandTotal.toFixed(2)}`);
+
+    }
+
+    // ===============================
+    // ADD TO CART
+    // ===============================
+
+    addToCartButtons.on('click', function () {
+
+        const id = $(this).data('id');
+
+        const name = $(this).data('name');
+
+        const price = parseFloat($(this).data('price'));
+
+        const item = {
+            id,
+            name,
+            price
+        };
+
+        shoppingCart.push(item);
+
+        updateCartDisplay();
+
+    });
+
+    // ===============================
+    // REMOVE ITEM
+    // ===============================
+
+    $(document).on('click', '.remove-btn', function () {
+
+        const itemIndex = $(this).data('index');
+
+        shoppingCart.splice(itemIndex, 1);
+
+        updateCartDisplay();
+
+    });
 
 });
-});
-
