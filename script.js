@@ -1,56 +1,48 @@
 $(document).ready(function () {
 
-    const themeToggleBtn = $('#themeToggleBtn');
+  const themeToggleBtn = $('#themeToggleBtn');
 
-    const cartItemsContainer = $('#cartItemsContainer');
+  const cartItemsContainer = $('#cartItemsContainer');
 
-    const subtotalElement = $('#subtotal');
+  const subtotalElement = $('#subtotal');
 
-    const taxElement = $('#tax');
+  const taxElement = $('#tax');
 
-    const totalElement = $('#total');
+  const totalElement = $('#total');
 
-    const addToCartButtons = $('.add-to-cart');
+  const addToCartButtons = $('.add-to-cart');
 
-    let shoppingCart = [];
+  let shoppingCart = [];
 
-    // ===============================
-    // THEME
-    // ===============================
+  const savedTheme = localStorage.getItem('theme');
 
-    const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    $('body').addClass('dark-mode');
+  }
 
-    if (savedTheme === 'dark') {
-        $('body').addClass('dark-mode');
+  themeToggleBtn.on('click', function () {
+
+    $('body').toggleClass('dark-mode');
+
+    if ($('body').hasClass('dark-mode')) {
+      localStorage.setItem('theme', 'dark');
+    } else {
+      localStorage.setItem('theme', 'light');
     }
 
-    themeToggleBtn.on('click', function () {
+  });
 
-        $('body').toggleClass('dark-mode');
+  function updateCartDisplay() {
 
-        if ($('body').hasClass('dark-mode')) {
-            localStorage.setItem('theme', 'dark');
-        } else {
-            localStorage.setItem('theme', 'light');
-        }
+    cartItemsContainer.html('');
 
-    });
+    let subtotal = 0;
 
-    // ===============================
-    // UPDATE CART
-    // ===============================
+    shoppingCart.forEach((item, index) => {
 
-    function updateCartDisplay() {
+      subtotal += item.price;
 
-        cartItemsContainer.html('');
-
-        let subtotal = 0;
-
-        shoppingCart.forEach((item, index) => {
-
-            subtotal += item.price;
-
-            const cartItem = `
+      const cartItem = `
                 <div class="cart-item">
                     <p>${item.name} - $${item.price.toFixed(2)}</p>
 
@@ -60,58 +52,50 @@ $(document).ready(function () {
                 </div>
             `;
 
-            cartItemsContainer.append(cartItem);
-
-        });
-
-        const tax = subtotal * 0.10;
-
-        const grandTotal = subtotal + tax;
-
-        subtotalElement.text(`$${subtotal.toFixed(2)}`);
-
-        taxElement.text(`$${tax.toFixed(2)}`);
-
-        totalElement.text(`$${grandTotal.toFixed(2)}`);
-
-    }
-
-    // ===============================
-    // ADD TO CART
-    // ===============================
-
-    addToCartButtons.on('click', function () {
-
-        const id = $(this).data('id');
-
-        const name = $(this).data('name');
-
-        const price = parseFloat($(this).data('price'));
-
-        const item = {
-            id,
-            name,
-            price
-        };
-
-        shoppingCart.push(item);
-
-        updateCartDisplay();
+      cartItemsContainer.append(cartItem);
 
     });
 
-    // ===============================
-    // REMOVE ITEM
-    // ===============================
+    const tax = subtotal * 0.10;
 
-    $(document).on('click', '.remove-btn', function () {
+    const grandTotal = subtotal + tax;
 
-        const itemIndex = $(this).data('index');
+    subtotalElement.text(`$${subtotal.toFixed(2)}`);
 
-        shoppingCart.splice(itemIndex, 1);
+    taxElement.text(`$${tax.toFixed(2)}`);
 
-        updateCartDisplay();
+    totalElement.text(`$${grandTotal.toFixed(2)}`);
 
-    });
+  }
+
+  addToCartButtons.on('click', function () {
+
+    const id = $(this).data('id');
+
+    const name = $(this).data('name');
+
+    const price = parseFloat($(this).data('price'));
+
+    const item = {
+      id,
+      name,
+      price
+    };
+
+    shoppingCart.push(item);
+
+    updateCartDisplay();
+
+  });
+
+  $(document).on('click', '.remove-btn', function () {
+
+    const itemIndex = $(this).data('index');
+
+    shoppingCart.splice(itemIndex, 1);
+
+    updateCartDisplay();
+
+  });
 
 });
